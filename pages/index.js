@@ -1,1 +1,5 @@
-console.log("O arquivo index.js foi carregado com sucesso!");
+function Home() {
+    return <h1>Teste</h1>
+}
+
+export default Home;
