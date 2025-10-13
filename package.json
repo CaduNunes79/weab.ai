@@ -1,0 +1,21 @@
+{
+  "name": "weab.ai",
+  "version": "1.0.0",
+  "description": "[W]eb [E]nerprise [A]pplication [B]uilder to quickly generate customized web applications if IA features",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com:CaduNunes79/weab.ai.git"
+  },
+  "author": "Cadu Nunes",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^13.1.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
