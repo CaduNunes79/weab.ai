@@ -12,20 +12,19 @@
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write .",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "": ""
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
     "url": "github.com:CaduNunes79/weab.ai.git"
   },
   "dependencies": {
-    "jest": "^29.6.2",
     "next": "^13.1.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "jest": "^29.6.2",
     "prettier": "^3.6.2"
   }
 }
