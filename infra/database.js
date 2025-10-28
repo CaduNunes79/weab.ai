@@ -6,21 +6,10 @@ async function query(queryObject) {
     client = await getNewCLient();
     const result = await client.query(queryObject);
     return result;
-  } catch (error) {
-    throw error;
+    // eslint-disable-next-line no-useless-catch
   } finally {
     await client.end();
   }
-}
-
-function getSSLValues() {
-  if (process.env.POSTGRES_CA) {
-    return {
-      ca: process.env.POSTGRES_CA,
-    };
-  }
-
-  return process.env.NODE_ENV === "production" ? true : false;
 }
 
 async function getNewCLient() {
@@ -37,7 +26,19 @@ async function getNewCLient() {
   return client;
 }
 
-export default {
+const database = {
   query,
   getNewCLient,
 };
+
+export default database;
+
+function getSSLValues() {
+  if (process.env.POSTGRES_CA) {
+    return {
+      ca: process.env.POSTGRES_CA,
+    };
+  }
+
+  return process.env.NODE_ENV === "production" ? true : false;
+}
