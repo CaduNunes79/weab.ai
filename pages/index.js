@@ -1,5 +1,5 @@
 function Home() {
-  return <h1>Teste #01</h1>;
+  return <h1>[W]eb [E]nerprise [A]pplication [B]uilder</h1>;
 }
 
 export default Home;
