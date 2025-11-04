@@ -7,8 +7,10 @@ async function query(queryObject) {
     const result = await client.query(queryObject);
     return result;
     // eslint-disable-next-line no-useless-catch
+  } catch (error) {
+    throw error;
   } finally {
-    await client.end();
+    await client?.end();
   }
 }
 
