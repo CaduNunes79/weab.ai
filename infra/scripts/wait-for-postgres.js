@@ -20,7 +20,7 @@ function checkPostgres() {
 
     //process.stdout.write("\r" + " ".repeat(50) + "\r");
     process.stdout.write("\r" + "🟠 Waiting for Postgres...");
-    console.log("\n🟢 Postgres is ready and accepting connections\n");
+    console.log("\n🟢 Postgres is ready and accepting connections");
   }
 }
 
