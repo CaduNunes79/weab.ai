@@ -1,4 +1,5 @@
 import { Client } from "pg";
+import { ServiceError } from "./errors.js";
 
 async function query(queryObject) {
   let client;
@@ -8,7 +9,11 @@ async function query(queryObject) {
     return result;
     // eslint-disable-next-line no-useless-catch
   } catch (error) {
-    throw error;
+    const serviceErrorObject = new ServiceError({
+      message: "Database Service Unavailable",
+      cause: error,
+    });
+    throw serviceErrorObject;
   } finally {
     await client?.end();
   }
