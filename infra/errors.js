@@ -1,11 +1,11 @@
 export class InternalServerError extends Error {
-  constructor({ cause }) {
+  constructor({ cause, statusCode }) {
     super("Unexpected Error", {
       cause,
     });
     this.name = "InternalServerError";
     this.action = "Contact support";
-    this.status_code = 500;
+    this.statusCode = statusCode || 500;
   }
 
   toJSON() {
@@ -13,7 +13,27 @@ export class InternalServerError extends Error {
       name: this.name,
       message: this.message,
       action: this.action,
-      statusCode: this.status_code,
+      statusCode: this.statusCode,
+    };
+  }
+}
+
+export class ServiceError extends Error {
+  constructor({ cause, message }) {
+    super(message || "Service currently unavailable", {
+      cause,
+    });
+    this.name = "ServiceError";
+    this.action = "Check if the service is currently available";
+    this.statusCode = 503;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      statusCode: this.statusCode,
     };
   }
 }
@@ -23,7 +43,7 @@ export class MethodNotAllowedError extends Error {
     super("Method Not Allowed for this endpoint");
     this.name = "MethodNotAllowedError";
     this.action = "Please check the API documentation for allowed methods.";
-    this.status_code = 405;
+    this.statusCode = 405;
   }
 
   toJSON() {
@@ -31,7 +51,7 @@ export class MethodNotAllowedError extends Error {
       name: this.name,
       message: this.message,
       action: this.action,
-      statusCode: this.status_code,
+      statusCode: this.statusCode,
     };
   }
 }
