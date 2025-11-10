@@ -16,6 +16,7 @@ describe("POST /api/v1/migrations", () => {
           },
         );
 
+        //console.log("Response Body 1: ", response1);
         expect(response1.status).toBe(201);
 
         const response1Body = await response1.json();
@@ -31,7 +32,7 @@ describe("POST /api/v1/migrations", () => {
             method: "POST",
           },
         );
-
+        //console.log("Response Body 2: ", response2);
         expect(response2.status).toBe(200);
 
         const response2Body = await response2.json();
