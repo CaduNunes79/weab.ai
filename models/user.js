@@ -1,5 +1,35 @@
 import database from "infra/database.js";
-import { ValidationError } from "infra/errors.js";
+import { ValidationError, NotFoundError } from "infra/errors.js";
+
+async function findOneByUsername(username) {
+  const existingUser = await runSelectQuery(username);
+  return existingUser;
+
+  async function runSelectQuery(username) {
+    const results = await database.query({
+      text: `SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        LIMIT
+          1
+          ;`,
+      values: [username],
+    });
+
+    //console.log("Valid Unique Email: ", result.rows[0]);
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "User not found.",
+        action: "Check the provided data for errors.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
 
 async function create(userInputValues) {
   await validateUniqueEmail(userInputValues.email);
@@ -30,7 +60,7 @@ async function create(userInputValues) {
   }
 
   async function validateUniqueUsername(username) {
-    const result = await database.query({
+    const results = await database.query({
       text: `SELECT
           username
         FROM
@@ -41,13 +71,13 @@ async function create(userInputValues) {
     });
 
     //console.log("Valid Unique Email: ", result.rows[0]);
-    if (result.rowCount > 0) {
+    if (results.rowCount > 0) {
       throw new ValidationError({
         message: "Username already in use.",
         action: "Use a different username.",
       });
     }
-    return result.rows[0];
+    return results.rows[0];
   }
 
   async function runInsertQuery(userInputValues) {
@@ -73,6 +103,7 @@ async function create(userInputValues) {
 
 const user = {
   create,
+  findOneByUsername,
 };
 
 export default user;
