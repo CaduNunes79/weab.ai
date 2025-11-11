@@ -17,18 +17,18 @@ exports.up = (pgm) => {
       unique: true,
     },
     password_hash: {
-      type: "varchar(72)",
+      type: "varchar(60)",
       notNull: true,
     },
     created_at: {
       type: "timestamptz",
       notNull: true,
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc', now())"),
     },
     updated_at: {
       type: "timestamptz",
       notNull: true,
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc', now())"),
     },
   });
 };
