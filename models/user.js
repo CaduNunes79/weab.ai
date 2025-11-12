@@ -11,7 +11,7 @@ async function findOneByUsername(username) {
       text: `SELECT
           *
         FROM
-          users
+          sys_users
         WHERE
           LOWER(username) = LOWER($1)
         LIMIT
@@ -48,7 +48,7 @@ async function create(userInputValues) {
   async function runInsertQuery(userInputValues) {
     const result = await database.query({
       text: `INSERT INTO
-        users
+        sys_users
         (username, email, password_hash)
       VALUES
         ($1, $2, $3)
@@ -85,7 +85,7 @@ async function validateUniqueUsername(username) {
     text: `SELECT
           username
         FROM
-          users
+          sys_users
         WHERE
           LOWER(username) = LOWER($1);`,
     values: [username],
@@ -106,7 +106,7 @@ async function validateUniqueEmail(email) {
     text: `SELECT
           email
         FROM
-          users
+          sys_users
         WHERE
           LOWER(email) = LOWER($1);`,
     values: [email],
