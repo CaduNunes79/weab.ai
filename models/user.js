@@ -32,7 +32,7 @@ async function findOneByUsername(username) {
   }
 }
 
-async function findOneByEmail(username) {
+async function findOneByEmail(email) {
   const existingUser = await runSelectQuery(email);
   return existingUser;
 
@@ -53,7 +53,7 @@ async function findOneByEmail(username) {
     //console.log("Valid Unique Email: ", result.rows[0]);
     if (results.rowCount === 0) {
       throw new NotFoundError({
-        message: "Email not found.",
+        message: "Email address not found.",
         action: "Check the provided data for errors.",
       });
     }

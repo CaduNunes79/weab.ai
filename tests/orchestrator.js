@@ -31,6 +31,7 @@ async function createUser(userObject) {
     password_hash: userObject.password_hash || faker.internet.password(),
   });
 }
+
 async function clearDatabase() {
   await database.query("drop schema public cascade; create schema public;");
 }

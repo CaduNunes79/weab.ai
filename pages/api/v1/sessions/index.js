@@ -14,7 +14,6 @@ async function postHandler(request, response) {
   const userInputValues = request.body;
   try {
     const userStored = await user.findOneByEmail(userInputValues.email);
-
     const passwordMatch = await password.compare(
       userInputValues.password_hash,
       userStored.password_hash,
@@ -22,7 +21,7 @@ async function postHandler(request, response) {
 
     if (!passwordMatch) {
       throw new UnauthorizedError({
-        message: "Passwprd don't match",
+        message: "Password don't match",
         action: "Provide valid credentials to log in.",
       });
     }
