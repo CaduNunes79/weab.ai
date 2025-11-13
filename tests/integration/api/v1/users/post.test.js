@@ -23,7 +23,6 @@ describe("POST /api/v1/users", () => {
           password_hash: "hashed_password",
         }),
       });
-      //console.log("Response: ", response);
 
       expect(response.status).toBe(201);
 
