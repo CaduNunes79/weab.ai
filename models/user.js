@@ -32,6 +32,36 @@ async function findOneByUsername(username) {
   }
 }
 
+async function findOneByEmail(email) {
+  const existingUser = await runSelectQuery(email);
+  return existingUser;
+
+  async function runSelectQuery(email) {
+    const results = await database.query({
+      text: `SELECT
+          *
+        FROM
+          sys_users
+        WHERE
+          LOWER(email) = LOWER($1)
+        LIMIT
+          1
+          ;`,
+      values: [email],
+    });
+
+    //console.log("Valid Unique Email: ", result.rows[0]);
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "Email address not found.",
+        action: "Check the provided data for errors.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function create(userInputValues) {
   await validateUniqueEmail(userInputValues.email);
   await validateUniqueUsername(userInputValues.username);
@@ -126,6 +156,7 @@ const user = {
   create,
   update,
   findOneByUsername,
+  findOneByEmail,
 };
 
 export default user;
