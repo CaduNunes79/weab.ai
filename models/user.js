@@ -32,7 +32,7 @@ async function findOneByUsername(username) {
   }
 }
 
-async function findOneByEmail(email) {
+async function findUserByEmail(email) {
   const existingUser = await runSelectQuery(email);
   return existingUser;
 
@@ -156,7 +156,7 @@ const user = {
   create,
   update,
   findOneByUsername,
-  findOneByEmail,
+  findUserByEmail,
 };
 
 export default user;

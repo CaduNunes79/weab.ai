@@ -1,8 +1,8 @@
 import { createRouter } from "next-connect";
 import controller from "infra/controller.js";
-import user from "models/user.js";
-import password from "models/password.js";
-import { UnauthorizedError } from "infra/errors.js";
+import authentication from "models/authentication.js";
+import session from "models/session.js";
+import * as cookie from "cookie";
 
 const router = createRouter();
 
@@ -12,24 +12,22 @@ export default router.handler(controller.errorHandlers);
 
 async function postHandler(request, response) {
   const userInputValues = request.body;
-  try {
-    const userStored = await user.findOneByEmail(userInputValues.email);
-    const passwordMatch = await password.compare(
-      userInputValues.password_hash,
-      userStored.password_hash,
-    );
+  let newSession;
 
-    if (!passwordMatch) {
-      throw new UnauthorizedError({
-        message: "Password don't match",
-        action: "Provide valid credentials to log in.",
-      });
-    }
-  } catch (error) {
-    throw new UnauthorizedError({
-      message: "Authentication data does not match our records.",
-      action: "Provide valid credentials to log in.",
-    });
-  }
-  return response.status(201).json({});
+  const authenticatedUser = await authentication.getAuthenticatedUser(
+    userInputValues.email,
+    userInputValues.password_hash,
+  );
+
+  newSession = await session.create(authenticatedUser.id);
+
+  const setCookie = cookie.serialize("session_id", newSession.token, {
+    path: "/",
+    maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+  response.setHeader("Set-Cookie", setCookie);
+
+  return response.status(201).json(newSession);
 }
