@@ -93,7 +93,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("With correct `email` but correct `password`", async () => {
+    test("With correct `email` and correct `password`", async () => {
       const createdUser = await orchestrator.createUser({
         email: "correct_email@gmail.com",
         password_hash: "correct_password",
