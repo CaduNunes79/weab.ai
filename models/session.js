@@ -25,8 +25,55 @@ async function create(userId) {
   }
 }
 
+async function refreshSession(token) {
+  const newExpiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
+  const updatedSession = await runUpdateQuery(token, newExpiresAt);
+
+  return updatedSession;
+
+  async function runUpdateQuery(token, newExpiresAt) {
+    const results = await database.query({
+      text: `UPDATE
+          sys_sessions
+        SET
+          expires_at = $1,
+          updated_at = NOW()
+        WHERE
+          token = $2
+        RETURNING *;
+        `,
+      values: [newExpiresAt, token],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function findValidSessionByUserId(user_id) {
+  const hasValidSession = await runSelectQuery(user_id);
+  return hasValidSession;
+
+  async function runSelectQuery(user_id) {
+    const results = await database.query({
+      text: `SELECT
+        id, token, user_id, expires_at, created_at, updated_at
+      FROM
+        sys_sessions
+      WHERE
+        user_id = $1
+        AND expires_at > NOW()
+    ;
+      `,
+      values: [user_id],
+    });
+    return results.rows[0];
+  }
+}
+
 const session = {
   create,
+  refreshSession,
+  findValidSessionByUserId,
   EXPIRATION_IN_MILLISECONDS,
 };
 
