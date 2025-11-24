@@ -19,7 +19,13 @@ async function postHandler(request, response) {
     userInputValues.password_hash,
   );
 
-  newSession = await session.create(authenticatedUser.id);
+  newSession = await session.findValidSessionByUserId(authenticatedUser.id);
+
+  if (newSession === undefined) {
+    newSession = await session.create(authenticatedUser.id);
+  } else {
+    // Refresh session expiration
+  }
 
   const setCookie = cookie.serialize("session_id", newSession.token, {
     path: "/",
