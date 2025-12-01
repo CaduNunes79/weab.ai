@@ -17,7 +17,7 @@ describe("GET /api/v1/users/[username]", () => {
       });
 
       const response2 = await fetch(
-        "http://localhost:3000/api/v1/users/SameCase",
+        "http://localhost:3000/api/v1/user/SameCase",
       );
 
       expect(response2.status).toBe(200);
@@ -46,7 +46,7 @@ describe("GET /api/v1/users/[username]", () => {
       });
 
       const response2 = await fetch(
-        "http://localhost:3000/api/v1/users/casesensitive",
+        "http://localhost:3000/api/v1/user/casesensitive",
       );
       //console.log("Response: ", response);
 
@@ -70,7 +70,7 @@ describe("GET /api/v1/users/[username]", () => {
 
     test("With nonexistent username", async () => {
       const response = await fetch(
-        "http://localhost:3000/api/v1/users/NonExistentUser",
+        "http://localhost:3000/api/v1/user/NonExistentUser",
       );
 
       expect(response.status).toBe(404);

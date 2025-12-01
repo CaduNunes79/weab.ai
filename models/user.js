@@ -2,6 +2,36 @@ import database from "infra/database.js";
 import password from "models/password.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
+async function findOneById(userId) {
+  const existingUser = await runSelectQuery(userId);
+  return existingUser;
+
+  async function runSelectQuery(userId) {
+    const results = await database.query({
+      text: `SELECT
+          *
+        FROM
+          sys_users
+        WHERE
+          id = $1
+        LIMIT
+          1
+          ;`,
+      values: [userId],
+    });
+
+    //console.log("Valid Unique Email: ", result.rows[0]);
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "User not found.",
+        action: "Check the provided data for errors.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function findOneByUsername(username) {
   const existingUser = await runSelectQuery(username);
   return existingUser;
@@ -157,6 +187,7 @@ const user = {
   update,
   findOneByUsername,
   findUserByEmail,
+  findOneById,
 };
 
 export default user;
