@@ -112,6 +112,7 @@ describe("POST /api/v1/users", () => {
 
       expect(response.status).toBe(201);
 
+      // testar response body
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({

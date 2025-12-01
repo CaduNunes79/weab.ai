@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import database from "infra/database.js";
+import { UnauthorizedError } from "infra/errors";
 
 export const EXPIRATION_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 days
 
@@ -25,24 +26,24 @@ async function create(userId) {
   }
 }
 
-async function refreshSession(token) {
+async function refreshSession(sessionId) {
   const newExpiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
-  const updatedSession = await runUpdateQuery(token, newExpiresAt);
+  const updatedSession = await runUpdateQuery(sessionId, newExpiresAt);
 
   return updatedSession;
 
-  async function runUpdateQuery(token, newExpiresAt) {
+  async function runUpdateQuery(sessionId, newExpiresAt) {
     const results = await database.query({
       text: `UPDATE
           sys_sessions
         SET
-          expires_at = $1,
+          expires_at = $2,
           updated_at = NOW()
         WHERE
-          token = $2
+          id = $1
         RETURNING *;
         `,
-      values: [newExpiresAt, token],
+      values: [sessionId, newExpiresAt],
     });
 
     return results.rows[0];
@@ -70,10 +71,42 @@ async function findValidSessionByUserId(user_id) {
   }
 }
 
+async function findValidSessionByToken(sessionToken) {
+  const sessionFound = await runSelectQuery(sessionToken);
+
+  return sessionFound;
+
+  async function runSelectQuery(sessionToken) {
+    const results = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          sys_sessions
+        WHERE
+          token = $1
+          AND expires_at > NOW()
+        LIMIT 1
+        ;`,
+      values: [sessionToken],
+    });
+
+    if (results.rowCount === 0) {
+      throw new UnauthorizedError({
+        message: "Invalid session token.",
+        action: "Please log in to continue.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 const session = {
   create,
   refreshSession,
   findValidSessionByUserId,
+  findValidSessionByToken,
   EXPIRATION_IN_MILLISECONDS,
 };
 
