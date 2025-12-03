@@ -108,12 +108,13 @@ async function create(userInputValues) {
 
   async function runInsertQuery(userInputValues) {
     const result = await database.query({
-      text: `INSERT INTO
-        sys_users
-        (username, email, password_hash, features)
-      VALUES
-        ($1, $2, $3, $4)
-        RETURNING *;
+      text: `
+        INSERT INTO
+          sys_users (username, email, password_hash, features)
+        VALUES
+          ($1, $2, $3, $4)
+        RETURNING
+        *;
         `,
       values: [
         userInputValues.username,
@@ -148,12 +149,13 @@ async function update(username, userInputValues) {
 
 async function validateUniqueUsername(username) {
   const results = await database.query({
-    text: `SELECT
-          username
-        FROM
-          sys_users
-        WHERE
-          LOWER(username) = LOWER($1);`,
+    text: `
+      SELECT
+        username
+      FROM
+        sys_users
+      WHERE
+        LOWER(username) = LOWER($1);`,
     values: [username],
   });
 
@@ -169,12 +171,13 @@ async function validateUniqueUsername(username) {
 
 async function validateUniqueEmail(email) {
   const result = await database.query({
-    text: `SELECT
-          email
-        FROM
-          sys_users
-        WHERE
-          LOWER(email) = LOWER($1);`,
+    text: `
+      SELECT
+        email
+      FROM
+        sys_users
+      WHERE
+        LOWER(email) = LOWER($1);`,
     values: [email],
   });
 
