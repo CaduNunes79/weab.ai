@@ -18,7 +18,7 @@ describe("GET /api/v1/user", () => {
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },
@@ -37,6 +37,7 @@ describe("GET /api/v1/user", () => {
         id: createdUser.id,
         username: "UserWithValidSession",
         email: createdUser.email,
+        features: [],
         password_hash: createdUser.password_hash,
         created_at: createdUser.created_at.toISOString(),
         updated_at: createdUser.updated_at.toISOString(),
@@ -74,7 +75,7 @@ describe("GET /api/v1/user", () => {
       const nonexistentSessionToken =
         "2f5d99816dae4d07e3903f81cbe7e92734f74f0639944671b8b5becd1ecc6d56d126c16f6caaaf26226a3056a822f6dd";
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
         headers: {
           Cookie: `session_id=${nonexistentSessionToken}`,
         },
@@ -105,7 +106,7 @@ describe("GET /api/v1/user", () => {
 
       jest.useRealTimers();
 
-      const response = await fetch("http://localhost:3000/api/v1/user", {
+      const response = await fetch("http://localhost:3000/api/v1/users", {
         headers: {
           Cookie: `session_id=${sessionObject.token}`,
         },

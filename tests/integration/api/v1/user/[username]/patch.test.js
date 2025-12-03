@@ -10,7 +10,7 @@ describe("PATCH /api/v1/user/[username]", () => {
   describe("Anonymous user", () => {
     test("With nonexistent 'username'", async () => {
       const response = await fetch(
-        "http://localhost:3000/api/v1/user/NonExistentUser",
+        "http://localhost:3000/api/v1/users/NonExistentUser",
         {
           method: "PATCH",
         },
@@ -37,7 +37,7 @@ describe("PATCH /api/v1/user/[username]", () => {
         username: "user2",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/user/user2", {
+      const response = await fetch("http://localhost:3000/api/v1/users/user2", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ describe("PATCH /api/v1/user/[username]", () => {
       });
 
       const response = await fetch(
-        `http://localhost:3000/api/v1/user/${createdUser2.username}`,
+        `http://localhost:3000/api/v1/users/${createdUser2.username}`,
         {
           method: "PATCH",
           headers: {
