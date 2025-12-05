@@ -191,12 +191,43 @@ async function validateUniqueEmail(email) {
   return result.rows[0];
 }
 
+async function setFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          sys_users
+        SET
+          features = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *;`,
+      values: [userId, features],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "User not found.",
+        action: "Check the provided data for errors.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 const user = {
   create,
   update,
   findOneByUsername,
   findUserByEmail,
   findOneById,
+  setFeatures,
 };
 
 export default user;

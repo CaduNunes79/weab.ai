@@ -36,7 +36,6 @@ async function postHandler(request, response) {
   const newUser = await user.create(userInputValues);
 
   const activation_token = await activation.createActivationToken(newUser.id);
-  //console.log(activation_token);
   await activation.sendEmailToUser(newUser, activation_token);
 
   return response.status(201).json(newUser);
