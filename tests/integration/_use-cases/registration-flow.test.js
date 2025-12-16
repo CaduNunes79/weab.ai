@@ -15,20 +15,17 @@ describe("Use case: Registration Flow (all successfull)", () => {
   let activationTokenId;
 
   test("Create user account", async () => {
-    const createUserResponse = await fetch(
-      "http://localhost:3000/api/v1/users",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: "RegistrationUserFlow",
-          email: "registrationuser.flow@weabai.com",
-          password_hash: "RegistrationUserFlowPassword",
-        }),
+    const createUserResponse = await fetch(`${webserver.origin}/api/v1/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        username: "RegistrationUserFlow",
+        email: "registrationuser.flow@weabai.com",
+        password_hash: "RegistrationUserFlowPassword",
+      }),
+    });
 
     expect(createUserResponse.status).toBe(201);
 
@@ -54,6 +51,7 @@ describe("Use case: Registration Flow (all successfull)", () => {
     expect(lastEmail.text).toContain("RegistrationUserFlow");
 
     activationTokenId = orchestrator.extractUUID(lastEmail.text);
+
     expect(lastEmail.text).toContain(
       `${webserver.origin}/activation/${activationTokenId}`,
     );
@@ -84,7 +82,27 @@ describe("Use case: Registration Flow (all successfull)", () => {
     expect(activatedUser.features).toEqual(["create:session"]);
   });
 
-  test("User login", async () => {});
+  test("User login", async () => {
+    const createSessionResponse = await fetch(
+      `${webserver.origin}/api/v1/sessions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "registrationuser.flow@weabai.com",
+          password_hash: "RegistrationUserFlowPassword",
+        }),
+      },
+    );
+
+    expect(createSessionResponse.status).toBe(201);
+
+    const createSessionResponseBody = await createSessionResponse.json();
+
+    expect(createSessionResponseBody.user_id).toBe(createUserResponseBody.id);
+  });
 
   test("Get user information", async () => {});
 });

@@ -4,7 +4,7 @@ function getOrigin() {
   }
 
   if (process.env.VERCEL_ENV === "preview") {
-    return `http://${process.env.VERCEL_ENV}`;
+    return `https://${process.env.VERCEL_ENV}`;
   }
 
   return "https://weabai.com.br";
