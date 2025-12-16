@@ -13,7 +13,8 @@ async function create(userId) {
 
   async function runInsertQuery(token, userId, expiresAt) {
     const results = await database.query({
-      text: `INSERT INTO
+      text: `
+        INSERT INTO
           sys_sessions (token, user_id, expires_at)
         VALUES
           ($1, $2, $3)

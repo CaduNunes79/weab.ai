@@ -115,3 +115,25 @@ export class UnauthorizedError extends Error {
     };
   }
 }
+
+export class ForbiddenError extends Error {
+  constructor({ cause, message, action }) {
+    super(message || "Forbiden access", {
+      cause,
+    });
+    this.name = "ForbidenError";
+    this.action =
+      action ||
+      "Verify if the user has the correct permissions to perform this action.";
+    this.statusCode = 403;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      statusCode: this.statusCode,
+    };
+  }
+}

@@ -96,6 +96,7 @@ async function create(userInputValues) {
   await validateUniqueEmail(userInputValues.email);
   await validateUniqueUsername(userInputValues.username);
   await hashPasswordInObject(userInputValues);
+  await injectDefaultFeaturesInObject(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
@@ -107,22 +108,28 @@ async function create(userInputValues) {
 
   async function runInsertQuery(userInputValues) {
     const result = await database.query({
-      text: `INSERT INTO
-        sys_users
-        (username, email, password_hash)
-      VALUES
-        ($1, $2, $3)
-        RETURNING *;
+      text: `
+        INSERT INTO
+          sys_users (username, email, password_hash, features)
+        VALUES
+          ($1, $2, $3, $4)
+        RETURNING
+        *;
         `,
       values: [
         userInputValues.username,
         userInputValues.email,
         userInputValues.password_hash,
+        userInputValues.features,
       ],
     });
 
     //console.log("Created User: ", result.rows[0]);
     return result.rows[0];
+  }
+
+  function injectDefaultFeaturesInObject(userInputValues) {
+    userInputValues.features = ["read:activation_token"];
   }
 }
 
@@ -142,12 +149,13 @@ async function update(username, userInputValues) {
 
 async function validateUniqueUsername(username) {
   const results = await database.query({
-    text: `SELECT
-          username
-        FROM
-          sys_users
-        WHERE
-          LOWER(username) = LOWER($1);`,
+    text: `
+      SELECT
+        username
+      FROM
+        sys_users
+      WHERE
+        LOWER(username) = LOWER($1);`,
     values: [username],
   });
 
@@ -163,12 +171,13 @@ async function validateUniqueUsername(username) {
 
 async function validateUniqueEmail(email) {
   const result = await database.query({
-    text: `SELECT
-          email
-        FROM
-          sys_users
-        WHERE
-          LOWER(email) = LOWER($1);`,
+    text: `
+      SELECT
+        email
+      FROM
+        sys_users
+      WHERE
+        LOWER(email) = LOWER($1);`,
     values: [email],
   });
 
@@ -182,12 +191,43 @@ async function validateUniqueEmail(email) {
   return result.rows[0];
 }
 
+async function setFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          sys_users
+        SET
+          features = $2,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *;`,
+      values: [userId, features],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "User not found.",
+        action: "Check the provided data for errors.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 const user = {
   create,
   update,
   findOneByUsername,
   findUserByEmail,
   findOneById,
+  setFeatures,
 };
 
 export default user;

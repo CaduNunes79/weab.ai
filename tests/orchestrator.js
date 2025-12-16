@@ -74,6 +74,10 @@ async function getLastEmail() {
   const emailListBody = await emailListResponse.json();
   const lastEmailItem = emailListBody.pop();
 
+  if (!lastEmailItem) {
+    return null;
+  }
+
   const emailTextResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
@@ -81,6 +85,15 @@ async function getLastEmail() {
   lastEmailItem.text = emailTextBody;
 
   return lastEmailItem;
+}
+
+function extractUUID(text) {
+  const UUID_REGEX =
+    /[0-9a-fA-F-]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+
+  const match = text.match(UUID_REGEX);
+
+  return match ? match[0] : null;
 }
 
 const orchestrator = {
@@ -91,6 +104,7 @@ const orchestrator = {
   createSession,
   deleteAllEmails,
   getLastEmail,
+  extractUUID,
 };
 
 export default orchestrator;
